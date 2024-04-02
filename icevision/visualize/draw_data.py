@@ -42,6 +42,7 @@ def draw_sample(
     label_thin_border: bool = True,
     label_pad_width_factor: float = 0.02,
     label_pad_height_factor: float = 0.005,
+    bbox_thickness:int = None,
     mask_blend: float = 0.5,
     mask_border_thickness: int = 7,
     color_map: Optional[dict] = None,  # label -> color mapping
@@ -196,7 +197,7 @@ def draw_sample(
                     border_thickness=mask_border_thickness,
                 )
             if display_bbox and bbox is not None:
-                img = draw_bbox(img=img, bbox=bbox, color=color)
+                img = draw_bbox(img=img, bbox=bbox, color=color, thickness=bbox_thickness)
             if display_keypoints and keypoints is not None:
                 img = draw_keypoints(img=img, kps=keypoints, color=color)
             if display_label and label is not None:
@@ -449,6 +450,7 @@ def draw_bbox(
     bbox: BBox,
     color: Tuple[int, int, int],
     gap: bool = True,
+    thickness = None
 ):
     """Draws a box on an image with a given color.
     # Arguments
@@ -486,6 +488,11 @@ def draw_bbox(
         bbox_thickness = min_bbox
     if bbox_thickness > max_bbox:
         bbox_thickness = int(max_bbox)
+
+    # Hack
+    if bbox_thickness:
+        inner_thickness = bbox_thickness = thickness
+        
 
     if gap == False:
         xyxy = tuple(np.array(bbox.xyxy, dtype=int))
