@@ -414,6 +414,7 @@ def draw_pred(
     font_path: Optional[os.PathLike] = DEFAULT_FONT_PATH,
     font_size: Union[int, float] = 12,
     label_color: Union[np.array, list, tuple, str] = "#C4C4C4",  # Mild Gray
+    bbox_thickness:int = None,
     mask_blend: float = 0.5,
     mask_border_thickness: int = 7,
     color_map: Optional[dict] = None,  # label -> color mapping
@@ -434,6 +435,7 @@ def draw_pred(
         font_path=font_path,
         font_size=font_size,
         label_color=label_color,
+        bbox_thickness=bbox_thickness,
         mask_blend=mask_blend,
         mask_border_thickness=mask_border_thickness,
         color_map=color_map,
@@ -450,7 +452,7 @@ def draw_bbox(
     bbox: BBox,
     color: Tuple[int, int, int],
     gap: bool = True,
-    thickness = None
+    thickness: int = None
 ):
     """Draws a box on an image with a given color.
     # Arguments
@@ -465,33 +467,34 @@ def draw_bbox(
     img = PIL.Image.fromarray(img)
     draw = PIL.ImageDraw.Draw(img)
 
-    # corner thickness is linearly correlated with the smaller image dimension.
-    # We use the smaller image dimension rather than image area so as to avoid
-    # overly thick lines for large non-square images prior to transforming
-    # images. We set lower and upper bounds for corner thickness.
-    min_corner = 1
-    max_corner = 15
-    corner_thickness = int(0.005 * dims[1] + min_corner)
-    if corner_thickness > max_corner:
-        corner_thickness = int(max_corner)
+    # If no values passed calculated the thickness automatically
+    if thickness is None:
+        # corner thickness is linearly correlated with the smaller image dimension.
+        # We use the smaller image dimension rather than image area so as to avoid
+        # overly thick lines for large non-square images prior to transforming
+        # images. We set lower and upper bounds for corner thickness.
+        min_corner = 1
+        max_corner = 15
+        corner_thickness = int(0.005 * dims[1] + min_corner)
+        if corner_thickness > max_corner:
+            corner_thickness = int(max_corner)
 
-    corner_length = int(0.021 * dims[1] + 2.25)
+        corner_length = int(0.021 * dims[1] + 2.25)
 
-    # inner thickness of bboxes with corners
-    inner_thickness = int(1 + 0.0005 * dims[1])
+        # inner thickness of bboxes with corners
+        inner_thickness = int(1 + 0.0005 * dims[1])
 
-    # bbox thickness of bboxes without corners
-    min_bbox = 1
-    max_bbox = 8
-    bbox_thickness = int(0.0041 * dims[1] - 0.0058)
-    if bbox_thickness < min_bbox:
-        bbox_thickness = min_bbox
-    if bbox_thickness > max_bbox:
-        bbox_thickness = int(max_bbox)
+        # bbox thickness of bboxes without corners
+        min_bbox = 1
+        max_bbox = 8
+        bbox_thickness = int(0.0041 * dims[1] - 0.0058)
+        if bbox_thickness < min_bbox:
+            bbox_thickness = min_bbox
+        if bbox_thickness > max_bbox:
+            bbox_thickness = int(max_bbox)
 
-    # Hack
-    if bbox_thickness:
-        inner_thickness = bbox_thickness = thickness
+    else:
+        corner_thickness = corner_length = inner_thickness = bbox_thickness = thickness
         
 
     if gap == False:
