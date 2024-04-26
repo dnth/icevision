@@ -211,7 +211,7 @@ def show_preds(
     plot_grid(
         partials,
         ncols=2,
-        figsize=figsize or (6, 6 * len(preds) / 2 / 0.75),
+        figsize=figsize or (10, 10 * len(preds) / 2 / 0.75),
         show=show,
         axs_per_iter=2,
     )
