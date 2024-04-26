@@ -115,7 +115,7 @@ def wandb_image(pred: Prediction, add_ground_truth: bool = False) -> wandb.Image
         #                 "mask_data": mask_data,
         #                 "class_labels": class_id_to_label,
         #             }
-    return wandb.Image(pred.img, boxes=boxes, masks=masks)
+    return wandb.Image(pred.img, boxes=boxes, masks=masks, caption=pred.common.record_id)
 
 
 def wandb_segmentation_image(
