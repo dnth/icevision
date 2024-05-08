@@ -220,10 +220,11 @@ class Interpretation:
         logger.info(
             f"Losses returned by model: {[l for l in list(_prepend_str(self.losses_dict, 'loss').keys()) if l!='loss_total']}",
         )
-
+        logger.info("Computing losses..")
         samples, losses_stats = self.get_losses(model, dataset)
         samples = add_annotations(samples)
 
+        logger.info("Running inference..")
         dl = self.infer_dl(dataset, batch_size=batch_size)
         preds = self.predict_from_dl(model=model, infer_dl=dl)
         preds = [p.pred for p in preds]
